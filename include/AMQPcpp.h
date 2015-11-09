@@ -28,6 +28,7 @@
 #define AMQP_NOACK			256
 #define AMQP_NOLOCAL		512
 #define AMQP_MULTIPLE		1024
+#define AMQP_INTERNAL       2048
 
 
 #define HEADER_FOOTER_SIZE 8 //  7 bytes up front, then payload, then 1 byte footer
@@ -43,11 +44,13 @@
 
 #include "amqp.h"
 #include "amqp_framing.h"
+#include "amqp_tcp_socket.h"
 
 #include <iostream>
 #include <vector>
 #include <map>
 #include <memory>
+#include <sstream>
 
 //export AMQP;
 //using namespace std;
