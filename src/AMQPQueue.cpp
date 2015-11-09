@@ -19,7 +19,7 @@ AMQPQueue::AMQPQueue(amqp_connection_state_t * cnn, int channelNum) {
 	openChannel();
 }
 
-AMQPQueue::AMQPQueue(amqp_connection_state_t * cnn, int channelNum, string name) {
+AMQPQueue::AMQPQueue(amqp_connection_state_t * cnn, int channelNum, const std::string& name) {
 	this->cnn = cnn;
 	this->channelNum = channelNum;
 	this->name = name;
@@ -43,13 +43,13 @@ void AMQPQueue::Declare() {
 	sendDeclareCommand();
 }
 
-void AMQPQueue::Declare(string name) {
+void AMQPQueue::Declare(const std::string& name) {
 	this->parms=AMQP_AUTODELETE;
 	this->name=name;
 	sendDeclareCommand();
 }
 
-void AMQPQueue::Declare(string name, short parms) {
+void AMQPQueue::Declare(const std::string& name, short parms) {
 	this->parms=parms;
 	this->name=name;
 	sendDeclareCommand();
@@ -122,7 +122,7 @@ void AMQPQueue::Delete() {
 	sendDeleteCommand();
 }
 
-void AMQPQueue::Delete(string name) {
+void AMQPQueue::Delete(const std::string& name) {
 	this->name=name;
 	sendDeleteCommand();
 }
@@ -150,7 +150,7 @@ void AMQPQueue::Purge() {
 	sendPurgeCommand();
 }
 
-void AMQPQueue::Purge(string name) {
+void AMQPQueue::Purge(const std::string& name) {
 	 this->name=name;
 	 sendPurgeCommand();
 }
@@ -171,7 +171,7 @@ void AMQPQueue::sendPurgeCommand() {
 }
 
 // Bind command /* 50, 20; 3276820 */
-void AMQPQueue::Bind(string name, string key) {
+void AMQPQueue::Bind(const std::string& name, const std::string& key) {
 	sendBindCommand(name.c_str(), key.c_str());
 }
 
@@ -197,7 +197,7 @@ void AMQPQueue::sendBindCommand(const char * exchange, const char * key) {
 
 
 // UnBind command /* 50, 50; 3276850 */
-void AMQPQueue::unBind(string name, string key) {
+void AMQPQueue::unBind(const std::string& name, const std::string& key) {
 	sendUnBindCommand(name.c_str(), key.c_str());
 }
 
@@ -378,12 +378,12 @@ void AMQPQueue::Consume(short parms) {
 	sendConsumeCommand();
 }
 
-void AMQPQueue::setConsumerTag(string consumer_tag) {
+void AMQPQueue::setConsumerTag(const std::string& consumer_tag) {
 	this->consumer_tag = amqp_cstring_bytes(consumer_tag.c_str());
 }
 
 void AMQPQueue::sendConsumeCommand() {
-	amqp_basic_consume_ok_t *consume_ok;
+	//amqp_basic_consume_ok_t *consume_ok;
 	amqp_bytes_t queueByte = amqp_cstring_bytes(name.c_str());
 
 	char error_message[256];
@@ -429,11 +429,11 @@ void AMQPQueue::sendConsumeCommand() {
 	} else if (res.reply.id == AMQP_BASIC_CANCEL_OK_METHOD) {
 		return;//cancel ok
 	} else if (res.reply.id == AMQP_BASIC_CONSUME_OK_METHOD) {
-		consume_ok = (amqp_basic_consume_ok_t*) res.reply.decoded;
+		//consume_ok = (amqp_basic_consume_ok_t*) res.reply.decoded;
 		//printf("****** consume Ok c_tag=%s", consume_ok->consumer_tag.bytes );
 	}
 
-	auto_ptr<AMQPMessage> message ( new AMQPMessage(this) );
+	std::unique_ptr<AMQPMessage> message ( new AMQPMessage(this) );
 	pmessage = message.get();
 
 	amqp_frame_t frame;
@@ -598,7 +598,7 @@ void AMQPQueue::setHeaders(amqp_basic_properties_t * p) {
 	}
 }
 
-void AMQPQueue::Cancel(string consumer_tag){
+void AMQPQueue::Cancel(const std::string& consumer_tag){
 	this->consumer_tag = amqp_cstring_bytes(consumer_tag.c_str());
 	sendCancelCommand();
 }

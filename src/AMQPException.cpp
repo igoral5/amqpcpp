@@ -8,7 +8,7 @@
 
 #include "AMQPcpp.h"
 
-AMQPException::AMQPException(string message) {
+AMQPException::AMQPException(const std::string& message) {
 	this->message= message;
 }
 
@@ -53,6 +53,6 @@ uint16_t AMQPException::getReplyCode() {
 	return code;
 }
 
-string AMQPException::getMessage() {
+std::string AMQPException::getMessage() {
 	return message;
 }

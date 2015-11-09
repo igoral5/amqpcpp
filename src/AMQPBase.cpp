@@ -49,12 +49,12 @@ void AMQPBase::setParam(short param) {
 	this->parms=param;
 }
 
-string AMQPBase::getName() {
+std::string AMQPBase::getName() {
 	if (!name.size())
 		name="";
 	return name;
 }
 
-void AMQPBase::setName(string name) {
+void AMQPBase::setName(const std::string& name) {
 	this->name=name;
 }

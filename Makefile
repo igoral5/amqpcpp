@@ -1,5 +1,5 @@
 CXX      = g++
-CFLAGS   = -Wall
+CFLAGS   = -Wall -ggdb -std=c++11 -Werror
 CPPFLAGS = $(CFLAGS) -I/usr/local/include -L/usr/local/lib -Iinclude/
 
 LIBRARIES= rabbitmq

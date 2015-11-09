@@ -15,7 +15,7 @@ AMQPExchange::AMQPExchange(amqp_connection_state_t * cnn, int channelNum) {
 	openChannel();
 }
 
-AMQPExchange::AMQPExchange(amqp_connection_state_t * cnn, int channelNum, string name) {
+AMQPExchange::AMQPExchange(amqp_connection_state_t * cnn, int channelNum, const std::string& name) {
 	this->cnn = cnn;
 	this->channelNum = channelNum;
 	this->name = name;
@@ -35,20 +35,20 @@ void AMQPExchange::Declare() {
 	sendDeclareCommand();
 }
 
-void AMQPExchange::Declare(string name) {
+void AMQPExchange::Declare(const std::string& name) {
 	this->parms=0;
 	this->name=name;
 	sendDeclareCommand();
 }
 
-void AMQPExchange::Declare(string name, string type) {
+void AMQPExchange::Declare(const std::string& name, const std::string& type) {
 	this->parms=0;
 	this->name=name;
 	this->type=type;
 	sendDeclareCommand();
 }
 
-void AMQPExchange::Declare(string name, string type, short parms) {
+void AMQPExchange::Declare(const std::string& name, const std::string& type, short parms) {
 	this->name=name;
 	this->type=type;
 	this->parms=parms;
@@ -67,10 +67,12 @@ void AMQPExchange::sendDeclareCommand() {
 
 	amqp_boolean_t passive =	(parms & AMQP_PASSIVE)		? 1:0;
 	//amqp_boolean_t autodelete = (parms & AMQP_AUTODELETE)	? 1:0;
+	amqp_boolean_t autodelete = (parms & AMQP_AUTODELETE)	? 1:0;
 	amqp_boolean_t durable =	(parms & AMQP_DURABLE)		? 1:0;
+	amqp_boolean_t internal =   (parms & AMQP_INTERNAL)     ? 1:0;
 
-	//amqp_exchange_declare(*cnn, (amqp_channel_t) 1, exchange, exchangetype, passive, durable, autodelete, args ); //for some reason rabbitmq-c doesn't have auto-delete now...
-	amqp_exchange_declare(*cnn, (amqp_channel_t) 1, exchange, exchangetype, passive, durable, args );
+	amqp_exchange_declare(*cnn, (amqp_channel_t) 1, exchange, exchangetype, passive, durable, autodelete, internal, args ); //for some reason rabbitmq-c doesn't have auto-delete now...
+	//amqp_exchange_declare(*cnn, (amqp_channel_t) 1, exchange, exchangetype, passive, durable, args );
 
 	amqp_rpc_reply_t res =amqp_get_rpc_reply(*cnn);
 
@@ -101,7 +103,7 @@ void AMQPExchange::Delete() {
 	sendDeleteCommand();
 }
 
-void AMQPExchange::Delete(string name) {
+void AMQPExchange::Delete(const std::string& name) {
 	this->name=name;
 	sendDeleteCommand();
 }
@@ -129,14 +131,14 @@ void AMQPExchange::sendDeleteCommand(){
 
 // Bind
 
-void AMQPExchange::Bind(string name) {
+void AMQPExchange::Bind(const std::string& name) {
 	if (type != "fanout")
 		throw AMQPException("key is NULL, this using only for the type fanout" );
 
 	sendBindCommand(name.c_str(), NULL );
 }
 
-void AMQPExchange::Bind(string name, string key) {
+void AMQPExchange::Bind(const std::string& name, const std::string& key) {
 	sendBindCommand(name.c_str(), key.c_str());
 }
 
@@ -169,11 +171,11 @@ void AMQPExchange::sendBindCommand(const char * queue, const char * key){
 	AMQPBase::checkReply(&res);
 }
 
-void AMQPExchange::Publish(string message, string key) {
+void AMQPExchange::Publish(const std::string& message, const std::string& key) {
 	sendPublishCommand(amqp_cstring_bytes(message.c_str()), key.c_str());
 }
 
-void AMQPExchange::Publish(const char * data, uint32_t length, string key) {
+void AMQPExchange::Publish(const char * data, uint32_t length, const std::string& key) {
 	amqp_bytes_t messageByte = amqp_bytes_malloc(length);
 	memcpy(messageByte.bytes,data,length);
 	sendPublishCommand(messageByte, key.c_str());
@@ -256,7 +258,7 @@ void AMQPExchange::sendPublishCommand(amqp_bytes_t messageByte, const char * key
 	amqp_table_entry_t_ entries[props.headers.num_entries];
 
 	int i = 0;
-	map<string, string>::iterator it;
+	std::map<std::string, std::string>::iterator it;
 	for (it = sHeadersSpecial.begin(); it != sHeadersSpecial.end(); it++) {
 		entries[i].key = amqp_cstring_bytes((*it).first.c_str());
 		entries[i].value.kind = AMQP_FIELD_KIND_UTF8;
@@ -285,12 +287,12 @@ void AMQPExchange::sendPublishCommand(amqp_bytes_t messageByte, const char * key
 	}
 }
 
-void AMQPExchange::setHeader(string name, int value) {
+void AMQPExchange::setHeader(const std::string& name, int value) {
 	iHeaders[name] = value;
 	//iHeaders.insert(pair<string,int>( string(name), value));
 }
 
-void AMQPExchange::setHeader(string name, string value, bool special) {
+void AMQPExchange::setHeader(const std::string& name, const std::string& value, bool special) {
 	if (special) {
 		sHeadersSpecial[name] = value;
 		//sHeadersSpecial.insert(pair<string, string>(string(name), value));
@@ -300,6 +302,6 @@ void AMQPExchange::setHeader(string name, string value, bool special) {
 	}
 }
 
-void AMQPExchange::setHeader(string name, string value) {
+void AMQPExchange::setHeader(const std::string& name, const std::string& value) {
 	setHeader(name, value, 0);
 }

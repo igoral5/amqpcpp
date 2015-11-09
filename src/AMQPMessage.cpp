@@ -32,17 +32,17 @@ void AMQPMessage::setMessage(const char * data,uint32_t length) {
 	this->len = length;
 }
 
-char * AMQPMessage::getMessage(uint32_t* length) {
+std::string AMQPMessage::getMessage(uint32_t* length) {
 	if (this->data)
 	  {
 	    *length = this->len;
-	    return this->data;
+	   return std::string(this->data, this->data + this->len );
 	  }
 	*length = 0;
-	return '\0';
+	return "";
 }
 
-string AMQPMessage::getConsumerTag() {
+std::string AMQPMessage::getConsumerTag() {
 	return this->consumer_tag;
 }
 
@@ -50,7 +50,7 @@ void AMQPMessage::setConsumerTag(amqp_bytes_t consumer_tag) {
 	this->consumer_tag.assign( (char*)consumer_tag.bytes, consumer_tag.len );
 }
 
-void AMQPMessage::setConsumerTag(string consumer_tag) {
+void AMQPMessage::setConsumerTag(const std::string& consumer_tag) {
 	this->consumer_tag=consumer_tag;
 }
 
@@ -75,11 +75,11 @@ void AMQPMessage::setExchange(amqp_bytes_t exchange) {
 		this->exchange.assign( (char*)exchange.bytes, exchange.len );
 }
 
-void AMQPMessage::setExchange(string exchange) {
+void AMQPMessage::setExchange(const std::string& exchange) {
 	this->exchange = exchange;
 }
 
-string AMQPMessage::getExchange() {
+std::string AMQPMessage::getExchange() {
 	return exchange;
 }
 
@@ -88,48 +88,46 @@ void AMQPMessage::setRoutingKey(amqp_bytes_t routing_key) {
 		this->routing_key.assign( (char*)routing_key.bytes, routing_key.len );
 }
 
-void AMQPMessage::setRoutingKey(string routing_key) {
+void AMQPMessage::setRoutingKey(const std::string& routing_key) {
 	this->routing_key=routing_key;
 }
 
-string AMQPMessage::getRoutingKey() {
+std::string AMQPMessage::getRoutingKey() {
 	return routing_key;
 }
 
-void AMQPMessage::addHeader(string name, amqp_bytes_t * value) {
-	string svalue;
+void AMQPMessage::addHeader(const std::string& name, amqp_bytes_t * value) {
+	std::string svalue;
 	svalue.assign(( const char *) value->bytes, value->len);
 	headers[name] = svalue;
 	//headers.insert( pair<string,string>(name,svalue));
 }
 
-void AMQPMessage::addHeader(string name, uint64_t * value) {
-	char ivalue[32];
-	bzero(ivalue,32);
-	sprintf(ivalue,"%llu", *value);
-	headers[name] = string(ivalue);
+void AMQPMessage::addHeader(const std::string& name, uint64_t * value) {
+	std::ostringstream oss;
+	oss << *value;
+	headers[name] = oss.str();
 	//headers.insert(pair<string,string>(name,string(ivalue)));
 }
 
-void AMQPMessage::addHeader(string name, uint8_t * value) {
-	char ivalue[4];
-	bzero(ivalue,4);
-	sprintf(ivalue,"%d",*value);
-	headers[name] = string(ivalue);
+void AMQPMessage::addHeader(const std::string& name, uint8_t * value) {
+	std::ostringstream oss;
+	oss << *value;
+	headers[name] = oss.str();
 	//headers.insert( pair<string,string>(name,string(ivalue)));
 }
 
 void AMQPMessage::addHeader(amqp_bytes_t * name, amqp_bytes_t * value) {
 	//cout << "name " << name << endl;
-	string sname;
+	std::string sname;
 	sname.assign((const char *) name->bytes, name->len);
-	string svalue;
+	std::string svalue;
 	svalue.assign((const char *) value->bytes, value->len);
-	headers[sname] = string(svalue);
+	headers[sname] = svalue;
 	//headers.insert(pair<string, string>(sname, svalue));
 }
 
-string AMQPMessage::getHeader(string name) {
+std::string AMQPMessage::getHeader(const std::string& name) {
 	if (headers.find(name) == headers.end())
 		return "";
 	else

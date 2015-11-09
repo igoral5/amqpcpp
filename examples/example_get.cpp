@@ -17,13 +17,13 @@ int main () {
 
 			AMQPMessage * m= qu2->getMessage();
 			
-			cout << "count: "<<  m->getMessageCount() << endl;											 
+			std::cout << "count: "<<  m->getMessageCount() << std::endl;
 			if (m->getMessageCount() > -1) {
 			uint32_t j = 0;
-			cout << "message\n"<< m->getMessage(&j) << "\nmessage key: "<<  m->getRoutingKey() << endl;
-			cout << "exchange: "<<  m->getExchange() << endl;											
-			cout << "Content-type: "<< m->getHeader("Content-type") << endl;	
-			cout << "Content-encoding: "<< m->getHeader("Content-encoding") << endl;	
+			std::cout << "message\n"<< m->getMessage(&j) << "\nmessage key: "<<  m->getRoutingKey() << std::endl;
+			std::cout << "exchange: "<<  m->getExchange() << std::endl;
+			std::cout << "Content-type: "<< m->getHeader("Content-type") << std::endl;
+			std::cout << "Content-encoding: "<< m->getHeader("Content-encoding") << std::endl;
 			} else 
 				break;				
 						
