@@ -23,7 +23,7 @@ AMQPExchange::AMQPExchange(amqp_connection_state_t * cnn, int channelNum, const 
 	openChannel();
 }
 
-AMQPExchange::~AMQPExchange()
+AMQPExchange::~AMQPExchange() noexcept
 {
 }
 

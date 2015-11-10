@@ -137,7 +137,7 @@ class AMQPBase {
 
 
 	public:
-		virtual ~AMQPBase();
+		virtual ~AMQPBase() noexcept;
 		int getChannelNum();
 		void setParam(short param);
 		std::string getName();
@@ -196,7 +196,7 @@ class AMQPQueue : public AMQPBase  {
 
 		void addEvent( AMQPEvents_e eventType, int (*event)(AMQPMessage*) );
 
-		virtual ~AMQPQueue();
+		virtual ~AMQPQueue() noexcept;
 		
 		void Qos(uint32_t prefetch_size, uint16_t prefetch_count, amqp_boolean_t global );
 	private:
@@ -222,7 +222,7 @@ class AMQPExchange : public AMQPBase {
 	public:
 		AMQPExchange(amqp_connection_state_t * cnn, int channelNum);
 		AMQPExchange(amqp_connection_state_t * cnn, int channelNum, const std::string& name);
-		virtual ~AMQPExchange();
+		virtual ~AMQPExchange() noexcept;
 
 		void Declare();
 		void Declare(const std::string& name);

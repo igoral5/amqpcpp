@@ -34,10 +34,10 @@ void AMQPMessage::setMessage(const char * data,uint32_t length) {
 
 std::string AMQPMessage::getMessage(uint32_t* length) {
 	if (this->data)
-	  {
+	{
 	    *length = this->len;
-	   return std::string(this->data, this->data + this->len );
-	  }
+	    return std::string(this->data, this->data + this->len );
+	}
 	*length = 0;
 	return "";
 }

@@ -8,7 +8,8 @@
 
 #include "AMQPcpp.h"
 
-AMQPBase::~AMQPBase() {
+AMQPBase::~AMQPBase() noexcept
+{
 	this->closeChannel();
 }
 

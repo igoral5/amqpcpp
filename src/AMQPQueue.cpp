@@ -31,7 +31,8 @@ AMQPQueue::AMQPQueue(amqp_connection_state_t * cnn, int channelNum, const std::s
 	openChannel();
 }
 
-AMQPQueue::~AMQPQueue() {
+AMQPQueue::~AMQPQueue() noexcept
+{
 	this->closeChannel();
 	if (pmessage)
 		delete pmessage;
