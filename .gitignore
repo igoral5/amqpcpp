@@ -4,3 +4,6 @@ example_publish
 libamqpcpp.a
 *.o
 *~
+/.settings/
+/.cproject
+/.project
